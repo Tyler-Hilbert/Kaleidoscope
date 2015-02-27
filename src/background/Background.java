@@ -1,11 +1,6 @@
 package background;
 
-import static java.lang.Math.random;
-import java.util.ArrayList;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

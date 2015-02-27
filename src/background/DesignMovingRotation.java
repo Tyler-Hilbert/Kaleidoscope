@@ -20,6 +20,13 @@ public class DesignMovingRotation {
     
     private int iteration = 10; // Distance between lines
     private int speed = 50; // The speed the circle moves. A lower number is faster
+    private Color color = Color.BLUE;
+    
+    // Bouncing variables
+    private boolean edgeBouncing = true;
+    private int bounceX = 2;
+    private int bounceY = 1;
+    private int bounceMargin = 20;
     
     // Origin for cirlce
     private int x1;
@@ -28,6 +35,7 @@ public class DesignMovingRotation {
     // Where the origin is moving to
     private int xd;
     private int yd;
+
     
     public void start() {
         x1 = Background.WINDOW_WIDTH / 2;
@@ -51,16 +59,20 @@ public class DesignMovingRotation {
      */
     private void drawShapes(double degrees) {
         reset();
-        gc.setStroke(Color.RED);
+        gc.setStroke(color);
         
-        moveOrigin();
+        if (edgeBouncing) {
+            moveOriginBounce();
+        } else {
+            moveOriginRandom();
+        }
         
         // Loops through the circle generating points with distance `iteration`
         for (; degrees < 360; degrees += iteration) {
             double radians = Math.toRadians(degrees);
             // Find point with soh cah toa
-            double y2 = y1 - Math.sin(radians) * Background.WINDOW_HEIGHT; 
-            double x2 = x1 + Math.cos(radians) * Background.WINDOW_WIDTH;
+            double y2 = y1 - Math.sin(radians) * Background.WINDOW_HEIGHT * 1.5; 
+            double x2 = x1 + Math.cos(radians) * Background.WINDOW_WIDTH * 1.5;
             gc.strokeLine(x1, y1, x2, y2);
         }        
     }
@@ -81,15 +93,27 @@ public class DesignMovingRotation {
         Random rand = new Random();
         xd = rand.nextInt(Background.WINDOW_WIDTH);
         yd = rand.nextInt(Background.WINDOW_HEIGHT);
+        
+        if (edgeBouncing) {
+            int wall = rand.nextInt(4);
+            if (wall == 0)
+                xd = 20;
+            else if (wall == 1)
+                xd = (int)canvas.getWidth() - 20;
+            else if (wall == 2)
+                yd = 20;
+            else
+                yd = (int)canvas.getHeight() - 20;
+        }
     }
     
     /**
-     * Moves the origin towards the destination
+     * Moves the origin towards the random destination
      */
-    private void moveOrigin() {
+    private void moveOriginRandom() {
         if (xd == x1 || yd == y1) {
             generateDestination();
-        } 
+        }
         
         if (xd > x1) {
             x1++;
@@ -101,6 +125,21 @@ public class DesignMovingRotation {
             y1++;
         } else {
             y1--;
+        }
+    }
+    
+    /**
+     * Continues to move the origin on the path
+     */
+    private void moveOriginBounce() {        
+        x1 += bounceX;
+        y1 += bounceY;
+        if ((x1 <  bounceMargin && bounceX < 0) || (x1 > canvas.getWidth() - bounceMargin && bounceX > 0)) {
+            bounceX *= -1;
+        }
+        
+        if ((y1 < bounceMargin && bounceY < 0) || (y1 > canvas.getHeight() - bounceMargin && bounceY > 0)) {
+            bounceY *= -1;
         }
     }
 }
