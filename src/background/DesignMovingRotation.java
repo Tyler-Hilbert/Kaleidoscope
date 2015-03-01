@@ -48,6 +48,11 @@ public class DesignMovingRotation {
     // Where the origin is moving to
     private int xd;
     private int yd;
+    
+    // Changing direction
+    private boolean changingDirection = true;
+    private int changeDirectionSpeed = 5;
+    private int direction = 1; // DON'T MANUALLY CHANGE THIS. It determines the direction of rotation.
 
     
     public void start() {
@@ -56,9 +61,16 @@ public class DesignMovingRotation {
         
         generateDestination();
         
+        if (changingColor) {
+            Random rand = new Random();
+            r = rand.nextInt(256);
+            g = rand.nextInt(256);
+            b = rand.nextInt(256);
+        }
+        
         Timeline timeline = new Timeline(new KeyFrame(
             Duration.millis(speed),
-            ae-> drawShapes(++count%iteration)
+            ae-> drawShapes()
         ));
         
         timeline.setCycleCount(Animation.INDEFINITE);
@@ -67,10 +79,8 @@ public class DesignMovingRotation {
     
     /**
      * Draws the shapes on the UI
-     * @param degrees - The degree to start at. This degree is looped through to
-     *      make an endless movement
      */
-    private void drawShapes(double degrees) {
+    private void drawShapes() {
         reset();
         
         setColor();
@@ -80,6 +90,16 @@ public class DesignMovingRotation {
         } else {
             moveOriginRandom();
         }
+        
+        if (changingDirection) {
+            Random rand = new Random();
+            if (rand.nextInt(1000) <=  changeDirectionSpeed) {
+                direction *= -1;
+            }
+        }
+        count += direction;
+        double degrees = count % iteration;
+        
         
         // Loops through the circle generating points with distance `iteration`
         for (; degrees < 360; degrees += iteration) {
@@ -102,21 +122,21 @@ public class DesignMovingRotation {
             else if (r > rD)
                 r--;
             else
-                rD = rand.nextInt(256);
+                rD = rand.nextInt(246) + 10;
            
             if (g < gD) 
                 g++;
             else if (g > gD)
                 g--;
             else
-                gD = rand.nextInt(256);
+                gD = rand.nextInt(246) + 10;
             
             if (b < bD) 
                 b++;
             else if (b > bD)
                 b--;
             else
-                bD = rand.nextInt(256);
+                bD = rand.nextInt(246) + 10;
         }
         color = Color.web("rgb(" + r + "," + g + "," + b + ")");
         gc.setStroke(color);
