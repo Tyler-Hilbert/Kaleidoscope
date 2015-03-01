@@ -17,15 +17,28 @@ public class DesignMovingRotation {
     private GraphicsContext gc = Background.gc;
     private Canvas canvas = Background.canvas;
     private int count = 0;
-    
     private int iteration = 10; // Distance between lines
-    private int speed = 50; // The speed the circle moves. A lower number is faster
-    private Color color = Color.BLUE;
+
+    // Color changing 
+    private boolean changingColor = true;
+    private Color color;
+    // Current colors
+    private int r = 255;
+    private int g = 255;
+    private int b = 0;
+    // Destination colors. These are generated randomly in setColor()
+    private int rD;
+    private int gD;
+    private int bD;
+    
+    // The speed the circle moves. A lower number is faster
+    // Is only used when edgeBouncing = false
+    private int speed = 50; 
     
     // Bouncing variables
-    private boolean edgeBouncing = true;
-    private int bounceX = 2;
-    private int bounceY = 1;
+    private boolean edgeBouncing = false;
+    private int bounceX = 20;
+    private int bounceY = 7;
     private int bounceMargin = 20;
     
     // Origin for cirlce
@@ -59,8 +72,9 @@ public class DesignMovingRotation {
      */
     private void drawShapes(double degrees) {
         reset();
-        gc.setStroke(color);
         
+        setColor();
+
         if (edgeBouncing) {
             moveOriginBounce();
         } else {
@@ -75,6 +89,38 @@ public class DesignMovingRotation {
             double x2 = x1 + Math.cos(radians) * Background.WINDOW_WIDTH * 1.5;
             gc.strokeLine(x1, y1, x2, y2);
         }        
+    }
+    
+    /**
+     * Sets the color for the lines drawn
+     */
+    private void setColor() {
+        if (changingColor) {
+            Random rand = new Random();
+            if (r < rD) 
+                r++;
+            else if (r > rD)
+                r--;
+            else
+                rD = rand.nextInt(256);
+           
+            if (g < gD) 
+                g++;
+            else if (g > gD)
+                g--;
+            else
+                gD = rand.nextInt(256);
+            
+            if (b < bD) 
+                b++;
+            else if (b > bD)
+                b--;
+            else
+                bD = rand.nextInt(256);
+        }
+        color = Color.web("rgb(" + r + "," + g + "," + b + ")");
+        gc.setStroke(color);
+
     }
     
     /**
