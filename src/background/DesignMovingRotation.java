@@ -8,6 +8,9 @@ import javafx.animation.Timeline;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.util.Duration;
 
 /**
@@ -20,16 +23,11 @@ public class DesignMovingRotation {
     private int iteration = 10; // Distance between lines
 
     // Color changing 
-    private boolean changingColor = true;
-    private Color color;
-    // Current colors
-    private int r = 255;
-    private int g = 255;
-    private int b = 0;
-    // Destination colors. These are generated randomly in setColor()
-    private int rD;
-    private int gD;
-    private int bD;
+    public static boolean changingColor = true;
+    private boolean multicolor = true;
+    private ChangingColor color1 = new ChangingColor(170, 70, 0);
+    private ChangingColor color2 = new ChangingColor(90, 100, 110);
+    private ChangingColor color3 = new ChangingColor(255, 0, 255);
     
     // The speed the circle moves. A lower number is faster
     // Is only used when edgeBouncing = false
@@ -60,14 +58,7 @@ public class DesignMovingRotation {
         y1 = Background.WINDOW_HEIGHT / 2;
         
         generateDestination();
-        
-        if (changingColor) {
-            Random rand = new Random();
-            r = rand.nextInt(256);
-            g = rand.nextInt(256);
-            b = rand.nextInt(256);
-        }
-        
+
         Timeline timeline = new Timeline(new KeyFrame(
             Duration.millis(speed),
             ae-> drawShapes()
@@ -115,32 +106,15 @@ public class DesignMovingRotation {
      * Sets the color for the lines drawn
      */
     private void setColor() {
-        if (changingColor) {
-            Random rand = new Random();
-            if (r < rD) 
-                r++;
-            else if (r > rD)
-                r--;
-            else
-                rD = rand.nextInt(246) + 10;
-           
-            if (g < gD) 
-                g++;
-            else if (g > gD)
-                g--;
-            else
-                gD = rand.nextInt(246) + 10;
-            
-            if (b < bD) 
-                b++;
-            else if (b > bD)
-                b--;
-            else
-                bD = rand.nextInt(246) + 10;
+        if (multicolor) {
+            gc.setStroke(new RadialGradient(0, 0, 0.5, 0.5, 0.1, true,
+                   CycleMethod.REFLECT,
+                   new Stop(0.0, color1.getUpdatedColor()),
+                   new Stop(1.0, color2.getUpdatedColor()),
+                   new Stop(0.0, color3.getUpdatedColor())));
+        } else {
+            gc.setStroke(color1.getUpdatedColor());
         }
-        color = Color.web("rgb(" + r + "," + g + "," + b + ")");
-        gc.setStroke(color);
-
     }
     
     /**
