@@ -2,10 +2,15 @@ package background;
 
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -25,11 +30,26 @@ public class Background extends Application {
         
         DesignMovingRotation design = new DesignMovingRotation();
         design.start();
-       
+  
 
         root.getChildren().add(canvas);
         primaryStage.initStyle(StageStyle.UNDECORATED); // Removes windows border
-        primaryStage.setScene(new Scene(root));        
+        primaryStage.setScene(new Scene(root));  
+        
+        // Exit application when escape is pressed
+        EventHandler exit = new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                if (event instanceof KeyEvent) {
+                    if (((KeyEvent)event).getCode().equals(KeyCode.ESCAPE)) {
+                        Platform.exit();
+                    }
+                }  
+            }
+        };
+        primaryStage.getScene().setOnKeyPressed(exit);
+         
+        
         primaryStage.show();
     }
         
